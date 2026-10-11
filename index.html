@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Colorea</title>
+<style>
+:root{--u:6px;--ink:#27344b;--hi:#ffd23f}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;position:fixed;background:#9fdcff;font-family:"Trebuchet MS",Arial,sans-serif;color:var(--ink)}
+#app{display:flex;flex-direction:row;align-items:center;width:100%;height:100%;padding:calc(var(--u)*1.5)}
+.col{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:calc(var(--u)*4);padding:calc(var(--u)*1);box-shadow:0 calc(var(--u)*.6) 0 rgba(39,52,75,.25)}
+#tools{height:100%}
+#pal{height:100%;flex-direction:row;flex-shrink:0}
+.pc{display:flex;flex-direction:column;justify-content:center}
+button{font-family:inherit;border:0;padding:0;margin:0;cursor:pointer;color:var(--ink)}
+.big{width:calc(var(--u)*11);height:calc(var(--u)*11);margin:calc(var(--u)*.5);border-radius:calc(var(--u)*3);background:#eef6ff;font-size:calc(var(--u)*6);line-height:1;border:calc(var(--u)*.6) solid #eef6ff;-webkit-transition:-webkit-transform .1s;transition:transform .1s}
+.big:active,.sw:active{-webkit-transform:scale(.9);transform:scale(.9)}
+.big.on{background:var(--hi);border-color:var(--ink);-webkit-transform:scale(1.08);transform:scale(1.08)}
+.sz{width:calc(var(--u)*8);height:calc(var(--u)*7);margin:calc(var(--u)*.3);border-radius:calc(var(--u)*2);background:#eef6ff;border:calc(var(--u)*.5) solid #eef6ff;display:flex;align-items:center;justify-content:center}
+.sz i{display:block;background:var(--ink);border-radius:50%}
+.sz.on{background:var(--hi);border-color:var(--ink)}
+#gallery{font-size:calc(var(--u)*4.5);line-height:1;margin-top:calc(var(--u)*1)}
+.sw{width:calc(var(--u)*10);height:calc(var(--u)*10);margin:calc(var(--u)*.6);border-radius:50%;border:calc(var(--u)*.6) solid #fff;box-shadow:0 0 0 calc(var(--u)*.4) rgba(39,52,75,.25)}
+.sw.on{box-shadow:0 0 0 calc(var(--u)*.9) var(--ink);-webkit-transform:scale(1.12);transform:scale(1.12)}
+#center{flex:1;height:100%;display:flex;align-items:center;justify-content:center;position:relative;min-width:0}
+#stage{position:relative;background:#fff;border:calc(var(--u)*1) solid #ffb703;border-radius:calc(var(--u)*3);overflow:hidden;box-shadow:0 calc(var(--u)*.6) 0 rgba(39,52,75,.25)}
+#stage canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+#art{pointer-events:none}
+#gear{position:fixed;left:calc(var(--u)*2);bottom:calc(var(--u)*2);width:calc(var(--u)*5);height:calc(var(--u)*5);border-radius:50%;background:rgba(255,255,255,.6);font-size:calc(var(--u)*3);line-height:1;opacity:.6}
+#parent{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(20,30,50,.6);display:none;align-items:center;justify-content:center;z-index:9}
+#parent.open{display:flex}
+#box{background:#fff;border-radius:20px;padding:18px;width:92%;max-width:560px;font-size:16px}
+#box h2{margin:0 0 4px;font-size:20px}
+#box p{margin:0 0 12px;font-size:14px}
+.r{display:flex;flex-wrap:wrap;margin:-4px;margin-bottom:10px}
+.r>*{margin:4px}
+#box input[type=url]{flex:1;min-width:150px;padding:10px;border:2px solid #c9d9ef;border-radius:12px;font-size:16px;-webkit-user-select:text;user-select:text}
+#box button{background:#eef6ff;border:2px solid #c9d9ef;border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700}
+#msg{min-height:1.3em;font-size:14px;margin-bottom:8px}
+#err{position:fixed;left:0;right:0;top:0;background:#e53935;color:#fff;font:14px Arial;padding:6px 10px;z-index:99}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="tools" class="col">
+    <button class="big on" id="t-brush" aria-label="Pincel">🖌️</button>
+    <button class="big" id="t-fill" aria-label="Bote de pintura">🪣</button>
+    <button class="big" id="t-erase" aria-label="Goma">🧽</button>
+    <button class="big" id="undo" aria-label="Deshacer">↩️</button>
+    <div id="sizes"></div>
+    <button class="sz" id="gallery" aria-label="Elegir imagen de la galería">🖼️</button>
+  </div>
+  <div id="center"><div id="stage"><canvas id="paint"></canvas><canvas id="art"></canvas></div></div>
+  <div id="pal" class="col"><div class="pc" id="p1"></div><div class="pc" id="p2"></div></div>
+</div>
+
+<button id="gear" aria-label="Opciones para adultos (mantén pulsado)">⚙️</button>
+<input type="file" id="file" accept="image/*" style="position:fixed;left:0;top:0;width:1px;height:1px;opacity:0" tabindex="-1" aria-hidden="true">
+
+<div id="parent"><div id="box">
+  <h2>Para mamás y papás</h2>
+  <p>Elige un dibujo o carga el tuyo (líneas negras sobre fondo blanco).</p>
+  <div class="r">
+    <button id="d0">🏠 Casa</button><button id="d1">🐟 Pez</button><button id="d2">🌼 Flor</button>
+    <button id="upload">Subir imagen</button>
+  </div>
+  <div class="r"><input type="url" id="url" placeholder="URL de una imagen"><button id="load">Cargar</button></div>
+  <div id="msg" role="status"></div>
+  <div class="r"><button id="clear">Borrar todo</button><button id="close">Cerrar</button></div>
+</div></div>
+
+<script>
+(function(){
+window.onerror=function(m,s,l){var d=document.createElement('div');d.id='err';d.textContent='Error: '+m+' (línea '+l+')';document.body.appendChild(d)};
+var COLORS=["#e53935","#ff7043","#ffb300","#fdd835","#9ccc65","#2e7d32","#26c6da","#1e88e5","#7e57c2","#ec407a","#8d6e63","#ffccbc","#f8bbd0","#b3e5fc","#9e9e9e","#212121"];
+var SIZES=[10,22,40];
+var $=function(id){return document.getElementById(id)};
+var paint=$('paint'),art=$('art'),stage=$('stage'),center=$('center');
+var pc=paint.getContext('2d'),ac=art.getContext('2d');
+var W=800,H=600,mask=null,tool='brush',color=COLORS[0],size=SIZES[1],drawing=false,last=null,undoStack=[];
+
+// ---- tamaño de la interfaz y del dibujo (sin scroll) ----
+function layout(){
+  var h=window.innerHeight;
+  document.documentElement.style.setProperty('--u',(h/100)+'px');
+  $('app').style.height=h+'px';
+  var aw=center.clientWidth-8,ah=center.clientHeight-8,k=Math.min(aw/W,ah/H);
+  if(k>0){stage.style.width=Math.floor(W*k)+'px';stage.style.height=Math.floor(H*k)+'px'}
+}
+window.addEventListener('resize',layout);
+window.addEventListener('orientationchange',function(){setTimeout(layout,250)});
+
+// ---- paleta ----
+var swEls=[];
+COLORS.forEach(function(c,i){
+  var b=document.createElement('button');b.className='sw'+(c===color?' on':'');b.style.background=c;b.setAttribute('aria-label','Color '+(i+1));
+  b.onclick=function(){color=c;swEls.forEach(function(s){s.classList.remove('on')});b.classList.add('on');if(tool==='erase')setTool('brush')};
+  swEls.push(b);$(i<8?'p1':'p2').appendChild(b);
+});
+
+// ---- herramientas ----
+function setTool(t){tool=t;['brush','fill','erase'].forEach(function(n){$('t-'+n).classList.toggle('on',n===t)})}
+$('t-brush').onclick=function(){setTool('brush')};
+$('t-fill').onclick=function(){setTool('fill')};
+$('t-erase').onclick=function(){setTool('erase')};
+var szEls=[];
+SIZES.forEach(function(s,i){
+  var b=document.createElement('button');b.className='sz'+(s===size?' on':'');b.setAttribute('aria-label','Grosor '+(i+1));
+  var d=document.createElement('i');var px=(2.2+i*1.8);d.style.width=d.style.height='calc(var(--u)*'+px+')';b.appendChild(d);
+  b.onclick=function(){size=s;szEls.forEach(function(e){e.classList.remove('on')});b.classList.add('on');if(tool==='fill')setTool('brush')};
+  szEls.push(b);$('sizes').appendChild(b);
+});
+
+// ---- cargar imagen ----
+function say(t,err){var m=$('msg');m.textContent=t;m.style.color=err?'#e53935':'inherit'}
+function loadSource(src,w,h){
+  var k=Math.min(1,900/Math.max(w,h));W=Math.round(w*k);H=Math.round(h*k);
+  paint.width=art.width=W;paint.height=art.height=H;layout();
+  var t=document.createElement('canvas');t.width=W;t.height=H;var tc=t.getContext('2d');
+  tc.fillStyle='#fff';tc.fillRect(0,0,W,H);tc.drawImage(src,0,0,W,H);
+  var d=tc.getImageData(0,0,W,H),p=d.data;mask=new Uint8Array(W*H);
+  for(var i=0;i<W*H;i++){
+    var l=0.299*p[i*4]+0.587*p[i*4+1]+0.114*p[i*4+2];
+    var a=Math.max(0,Math.min(255,(255-l)*1.3));
+    p[i*4]=p[i*4+1]=p[i*4+2]=0;p[i*4+3]=a;mask[i]=a>110?1:0;
+  }
+  ac.putImageData(d,0,0);
+  pc.fillStyle='#fff';pc.fillRect(0,0,W,H);undoStack=[];
+}
+function fromImg(img){loadSource(img,img.naturalWidth,img.naturalHeight);say('Listo.');closePanel()}
+$('load').onclick=function(){
+  var u=$('url').value.trim();if(!u){say('Escribe o pega una URL.',true);return}
+  say('Cargando…');var img=new Image();img.crossOrigin='anonymous';
+  img.onload=function(){fromImg(img)};
+  img.onerror=function(){say('No se pudo cargar esa URL (la web puede no permitirlo). Prueba con "Subir imagen".',true)};
+  img.src=u;
+};
+$('upload').onclick=function(){$('file').click()};
+$('gallery').onclick=function(){$('file').click()};
+$('file').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;say('Cargando imagen…');
+  var r=new FileReader();
+  r.onerror=function(){say('No se pudo leer el archivo.',true)};
+  r.onload=function(){var img=new Image();
+    img.onload=function(){fromImg(img)};
+    img.onerror=function(){say('Archivo no compatible. Prueba con PNG o JPG.',true)};
+    img.src=r.result};
+  r.readAsDataURL(f);e.target.value='';
+});
+
+// ---- dibujos incluidos ----
+function O(x,cx,cy,r){x.beginPath();x.arc(cx,cy,r,0,7);x.stroke()}
+function E(x,cx,cy,rx,ry,rot){x.beginPath();x.ellipse(cx,cy,rx,ry,rot||0,0,7);x.stroke()}
+function L(x,pts,close){x.beginPath();x.moveTo(pts[0],pts[1]);for(var i=2;i<pts.length;i+=2)x.lineTo(pts[i],pts[i+1]);if(close)x.closePath();x.stroke()}
+var DRAW=[
+ function(x){O(x,660,110,60);for(var i=0;i<12;i++){var a=i*Math.PI/6;L(x,[660+Math.cos(a)*78,110+Math.sin(a)*78,660+Math.cos(a)*108,110+Math.sin(a)*108])}
+  x.strokeRect(220,300,280,220);L(x,[195,300,360,170,525,300],true);x.strokeRect(325,400,70,120);x.strokeRect(250,340,60,60);x.strokeRect(420,340,60,60);
+  x.strokeRect(630,400,24,120);O(x,642,370,50);O(x,600,400,38);O(x,685,405,38);L(x,[0,520,800,520]);O(x,90,100,28);O(x,125,92,34);O(x,160,102,26);L(x,[75,126,175,126])},
+ function(x){E(x,400,300,190,120);L(x,[214,300,70,180,70,420],true);L(x,[330,187,400,90,470,187]);O(x,520,260,24);
+  x.fillStyle='#000';x.beginPath();x.arc(525,260,9,0,7);x.fill();x.beginPath();x.arc(500,320,40,0.2,1.2);x.stroke();
+  O(x,660,200,24);O(x,700,130,15);O(x,630,110,10);E(x,400,380,60,25,0.3)},
+ function(x){for(var i=0;i<6;i++){var a=i*Math.PI/3;O(x,400+Math.cos(a)*110,230+Math.sin(a)*110,55)}O(x,400,230,55);
+  x.strokeRect(385,395,30,165);E(x,330,480,60,24,-0.5);E(x,470,450,60,24,0.5);L(x,[0,560,800,560]);O(x,90,80,40);O(x,700,90,40)}
+];
+function showDrawing(i){
+  var c=document.createElement('canvas');c.width=800;c.height=600;var x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,800,600);x.strokeStyle='#000';x.lineWidth=8;x.lineJoin=x.lineCap='round';
+  DRAW[i](x);loadSource(c,800,600);closePanel();
+}
+[0,1,2].forEach(function(i){$('d'+i).onclick=function(){showDrawing(i)}});
+
+// ---- pintar (táctil y ratón) ----
+function pos(e){var r=paint.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+function pt(e){var t=(e.touches&&e.touches[0])||(e.changedTouches&&e.changedTouches[0])||e;return pos(t)}
+function snap(){undoStack.push(pc.getImageData(0,0,W,H));if(undoStack.length>25)undoStack.shift()}
+function start(e){if(!mask)return;e.preventDefault();var p=pt(e);snap();
+  if(tool==='fill'){fill(Math.floor(p.x),Math.floor(p.y));return}
+  drawing=true;last=p;stroke(p,p)}
+function move(e){if(!drawing)return;e.preventDefault();var p=pt(e);stroke(last,p);last=p}
+function end(){drawing=false}
+paint.addEventListener('touchstart',start,{passive:false});
+paint.addEventListener('touchmove',move,{passive:false});
+paint.addEventListener('touchend',end);paint.addEventListener('touchcancel',end);
+paint.addEventListener('mousedown',start);
+window.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+document.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false});
+function stroke(a,b){
+  pc.strokeStyle=tool==='erase'?'#fff':color;pc.lineWidth=size*W/900+2;pc.lineCap=pc.lineJoin='round';
+  pc.beginPath();pc.moveTo(a.x,a.y);pc.lineTo(b.x+0.01,b.y);pc.stroke();
+}
+
+// ---- bote de pintura ----
+function fill(sx,sy){
+  if(sx<0||sy<0||sx>=W||sy>=H||mask[sy*W+sx])return;
+  var d=pc.getImageData(0,0,W,H),u=new Uint32Array(d.data.buffer);
+  var n=parseInt(color.slice(1),16),val=(255<<24)|((n&255)<<16)|(((n>>8)&255)<<8)|(n>>16);
+  var seen=new Uint8Array(W*H),st=[sy*W+sx];seen[st[0]]=1;
+  while(st.length){
+    var i=st.pop();u[i]=val;var x=i%W;
+    if(x>0&&!seen[i-1]&&!mask[i-1]){seen[i-1]=1;st.push(i-1)}
+    if(x<W-1&&!seen[i+1]&&!mask[i+1]){seen[i+1]=1;st.push(i+1)}
+    if(i>=W&&!seen[i-W]&&!mask[i-W]){seen[i-W]=1;st.push(i-W)}
+    if(i<W*(H-1)&&!seen[i+W]&&!mask[i+W]){seen[i+W]=1;st.push(i+W)}
+  }
+  pc.putImageData(d,0,0);
+}
+$('undo').onclick=function(){var s=undoStack.pop();if(s)pc.putImageData(s,0,0)};
+$('clear').onclick=function(){if(!mask)return;snap();pc.fillStyle='#fff';pc.fillRect(0,0,W,H);closePanel()};
+
+// ---- panel para adultos (mantener pulsado el engranaje) ----
+var timer=null;
+function openPanel(){$('parent').classList.add('open')}
+function closePanel(){$('parent').classList.remove('open')}
+function hold(){timer=setTimeout(openPanel,700)}
+function release(){clearTimeout(timer)}
+$('gear').addEventListener('touchstart',hold);$('gear').addEventListener('mousedown',hold);
+['touchend','touchcancel','mouseup','mouseleave'].forEach(function(n){$('gear').addEventListener(n,release)});
+$('close').onclick=closePanel;
+$('parent').addEventListener('touchmove',function(e){e.stopPropagation()});
+
+layout();showDrawing(0);
+})();
+</script>
+</body>
+</html>
