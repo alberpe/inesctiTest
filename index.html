@@ -5,39 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Colorea</title>
 <style>
-:root{--u:6px;--ink:#27344b;--hi:#ffd23f}
+:root{--u:6px;--ink:#3b2a1e;--hi:#ffc83d}
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;position:fixed;background:#9fdcff;font-family:"Trebuchet MS",Arial,sans-serif;color:var(--ink)}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;position:fixed;background:#2b6a22 radial-gradient(ellipse at 50% 0%,#c5e66a 0%,#5aa634 40%,#2b6a22 100%);font-family:"Trebuchet MS",Arial,sans-serif;color:var(--ink)}
 #app{display:flex;flex-direction:row;align-items:center;width:100%;height:100%;padding:calc(var(--u)*1.5)}
-.col{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:calc(var(--u)*4);padding:calc(var(--u)*1);box-shadow:0 calc(var(--u)*.6) 0 rgba(39,52,75,.25)}
+.col{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff7e0;border:calc(var(--u)*.7) solid #8b5a2b;border-radius:calc(var(--u)*4);padding:calc(var(--u)*1);box-shadow:0 calc(var(--u)*.7) 0 rgba(20,50,15,.45)}
 #tools{height:100%}
 #pal{height:100%;flex-direction:row;flex-shrink:0}
 .pc{display:flex;flex-direction:column;justify-content:center}
 button{font-family:inherit;border:0;padding:0;margin:0;cursor:pointer;color:var(--ink)}
-.big{width:calc(var(--u)*11);height:calc(var(--u)*11);margin:calc(var(--u)*.5);border-radius:calc(var(--u)*3);background:#eef6ff;font-size:calc(var(--u)*6);line-height:1;border:calc(var(--u)*.6) solid #eef6ff;-webkit-transition:-webkit-transform .1s;transition:transform .1s}
+.big{width:calc(var(--u)*11);height:calc(var(--u)*11);margin:calc(var(--u)*.5);border-radius:calc(var(--u)*3);background:#eee;font-size:calc(var(--u)*6);line-height:1;border:calc(var(--u)*.6) solid #fff7e0;-webkit-transition:-webkit-transform .1s;transition:transform .1s}
 .big:active,.sw:active{-webkit-transform:scale(.9);transform:scale(.9)}
-.big.on{background:var(--hi);border-color:var(--ink);-webkit-transform:scale(1.08);transform:scale(1.08)}
-.sz{width:calc(var(--u)*8);height:calc(var(--u)*7);margin:calc(var(--u)*.3);border-radius:calc(var(--u)*2);background:#eef6ff;border:calc(var(--u)*.5) solid #eef6ff;display:flex;align-items:center;justify-content:center}
+#t-brush{background:#ff7a45}#t-fill{background:#3fb6ea}#t-erase{background:#b87be6}#undo{background:#b9763f}
+.big.on{border-color:#fff;box-shadow:0 0 0 calc(var(--u)*.8) var(--ink);-webkit-transform:scale(1.1);transform:scale(1.1)}
+.sz{width:calc(var(--u)*8);height:calc(var(--u)*7);margin:calc(var(--u)*.3);border-radius:calc(var(--u)*2);background:#e3f2c4;border:calc(var(--u)*.5) solid #e3f2c4;display:flex;align-items:center;justify-content:center}
 .sz i{display:block;background:var(--ink);border-radius:50%}
 .sz.on{background:var(--hi);border-color:var(--ink)}
-#gallery{font-size:calc(var(--u)*4.5);line-height:1;margin-top:calc(var(--u)*1)}
-.sw{width:calc(var(--u)*10);height:calc(var(--u)*10);margin:calc(var(--u)*.6);border-radius:50%;border:calc(var(--u)*.6) solid #fff;box-shadow:0 0 0 calc(var(--u)*.4) rgba(39,52,75,.25)}
+#open{font-size:calc(var(--u)*4.5);line-height:1;margin-top:calc(var(--u)*1);background:#ffb43a;border-color:#ffb43a}
+.sw{width:calc(var(--u)*10);height:calc(var(--u)*10);margin:calc(var(--u)*.6);border-radius:50%;border:calc(var(--u)*.6) solid #fff7e0;box-shadow:0 0 0 calc(var(--u)*.4) rgba(59,42,30,.35)}
 .sw.on{box-shadow:0 0 0 calc(var(--u)*.9) var(--ink);-webkit-transform:scale(1.12);transform:scale(1.12)}
 #center{flex:1;height:100%;display:flex;align-items:center;justify-content:center;position:relative;min-width:0}
-#stage{position:relative;background:#fff;border:calc(var(--u)*1) solid #ffb703;border-radius:calc(var(--u)*3);overflow:hidden;box-shadow:0 calc(var(--u)*.6) 0 rgba(39,52,75,.25)}
+#stage{position:relative;background:#fff;border:calc(var(--u)*1) solid #ffb43a;border-radius:calc(var(--u)*3);overflow:hidden;box-shadow:0 calc(var(--u)*.7) 0 rgba(20,50,15,.45)}
 #stage canvas{position:absolute;left:0;top:0;width:100%;height:100%}
 #art{pointer-events:none}
-#gear{position:fixed;left:calc(var(--u)*2);bottom:calc(var(--u)*2);width:calc(var(--u)*5);height:calc(var(--u)*5);border-radius:50%;background:rgba(255,255,255,.6);font-size:calc(var(--u)*3);line-height:1;opacity:.6}
-#parent{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(20,30,50,.6);display:none;align-items:center;justify-content:center;z-index:9}
-#parent.open{display:flex}
-#box{background:#fff;border-radius:20px;padding:18px;width:92%;max-width:560px;font-size:16px}
-#box h2{margin:0 0 4px;font-size:20px}
-#box p{margin:0 0 12px;font-size:14px}
-.r{display:flex;flex-wrap:wrap;margin:-4px;margin-bottom:10px}
-.r>*{margin:4px}
-#box input[type=url]{flex:1;min-width:150px;padding:10px;border:2px solid #c9d9ef;border-radius:12px;font-size:16px;-webkit-user-select:text;user-select:text}
-#box button{background:#eef6ff;border:2px solid #c9d9ef;border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700}
-#msg{min-height:1.3em;font-size:14px;margin-bottom:8px}
+
+/* selector de imagen */
+#pick{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(20,50,15,.65);display:none;align-items:center;justify-content:center;z-index:9}
+#pick.open{display:flex}
+#box{background:#fff7e0;border:calc(var(--u)*.8) solid #8b5a2b;border-radius:calc(var(--u)*4);padding:calc(var(--u)*3);width:90%;max-width:calc(var(--u)*110);max-height:calc(var(--u)*92);display:flex;flex-direction:column}
+#menu{display:flex;flex-direction:row;justify-content:center}
+.opt{flex:1;margin:calc(var(--u)*1);padding:calc(var(--u)*3) calc(var(--u)*1);border-radius:calc(var(--u)*3);background:#eef6ff;border:calc(var(--u)*.6) solid #c9d9ef;font-size:calc(var(--u)*4);font-weight:700}
+#o-gal{background:#c9ecfb;border-color:#2fa8e0}#o-def{background:#efdcfb;border-color:#a65fd6}
+.opt span{display:block;font-size:calc(var(--u)*14);line-height:1.2}
+.opt:active{-webkit-transform:scale(.96);transform:scale(.96)}
+#defs{display:none;flex-direction:column;min-height:0}
+#defs.show{display:flex}
+#grid{display:flex;flex-wrap:wrap;justify-content:center;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.def{width:calc(50% - 16px);margin:8px;background:#fffdf5;border:calc(var(--u)*.6) solid #c9a36b;border-radius:calc(var(--u)*2);padding:6px;font-size:calc(var(--u)*3.5);font-weight:700}
+.def canvas,.def img{width:100%;height:auto;display:block}
+.def:active{-webkit-transform:scale(.96);transform:scale(.96)}
+#msg{min-height:1em;font-size:calc(var(--u)*3);text-align:center;color:#e53935}
+#close{align-self:center;margin-top:calc(var(--u)*1);padding:calc(var(--u)*1.5) calc(var(--u)*5);border-radius:calc(var(--u)*3);background:#ffb43a;border:calc(var(--u)*.5) solid #e59a1f;font-size:calc(var(--u)*3.8);font-weight:700}
 #err{position:fixed;left:0;right:0;top:0;background:#e53935;color:#fff;font:14px Arial;padding:6px 10px;z-index:99}
 </style>
 </head>
@@ -49,31 +57,28 @@ button{font-family:inherit;border:0;padding:0;margin:0;cursor:pointer;color:var(
     <button class="big" id="t-erase" aria-label="Goma">🧽</button>
     <button class="big" id="undo" aria-label="Deshacer">↩️</button>
     <div id="sizes"></div>
-    <button class="sz" id="gallery" aria-label="Elegir imagen de la galería">🖼️</button>
+    <button class="sz" id="open" aria-label="Cargar imagen">🖼️</button>
   </div>
   <div id="center"><div id="stage"><canvas id="paint"></canvas><canvas id="art"></canvas></div></div>
   <div id="pal" class="col"><div class="pc" id="p1"></div><div class="pc" id="p2"></div></div>
 </div>
 
-<button id="gear" aria-label="Opciones para adultos (mantén pulsado)">⚙️</button>
 <input type="file" id="file" accept="image/*" style="position:fixed;left:0;top:0;width:1px;height:1px;opacity:0" tabindex="-1" aria-hidden="true">
 
-<div id="parent"><div id="box">
-  <h2>Para mamás y papás</h2>
-  <p>Elige un dibujo o carga el tuyo (líneas negras sobre fondo blanco).</p>
-  <div class="r">
-    <button id="d0">🏠 Casa</button><button id="d1">🐟 Pez</button><button id="d2">🌼 Flor</button>
-    <button id="upload">Subir imagen</button>
+<div id="pick"><div id="box">
+  <div id="menu">
+    <button class="opt" id="o-gal"><span>📁</span>Galería</button>
+    <button class="opt" id="o-def"><span>🎨</span>Dibujos</button>
   </div>
-  <div class="r"><input type="url" id="url" placeholder="URL de una imagen"><button id="load">Cargar</button></div>
+  <div id="defs"><div id="grid"></div></div>
   <div id="msg" role="status"></div>
-  <div class="r"><button id="clear">Borrar todo</button><button id="close">Cerrar</button></div>
+  <button id="close">Cerrar</button>
 </div></div>
 
 <script>
 (function(){
 window.onerror=function(m,s,l){var d=document.createElement('div');d.id='err';d.textContent='Error: '+m+' (línea '+l+')';document.body.appendChild(d)};
-var COLORS=["#e53935","#ff7043","#ffb300","#fdd835","#9ccc65","#2e7d32","#26c6da","#1e88e5","#7e57c2","#ec407a","#8d6e63","#ffccbc","#f8bbd0","#b3e5fc","#9e9e9e","#212121"];
+var COLORS=["#d9532b","#ff9a3c","#ffc83d","#fff2a8","#9ccc3c","#2f8f3a","#1fb5a8","#2fa8e0","#1e5fb4","#a65fd6","#d6a8f0","#ff7fa8","#8b5a2b","#c9a36b","#e8d3a9","#3b2a1e"];
 var SIZES=[10,22,40];
 var $=function(id){return document.getElementById(id)};
 var paint=$('paint'),art=$('art'),stage=$('stage'),center=$('center');
@@ -113,7 +118,7 @@ SIZES.forEach(function(s,i){
 });
 
 // ---- cargar imagen ----
-function say(t,err){var m=$('msg');m.textContent=t;m.style.color=err?'#e53935':'inherit'}
+function say(t){$('msg').textContent=t||''}
 function loadSource(src,w,h){
   var k=Math.min(1,900/Math.max(w,h));W=Math.round(w*k);H=Math.round(h*k);
   paint.width=art.width=W;paint.height=art.height=H;layout();
@@ -128,47 +133,82 @@ function loadSource(src,w,h){
   ac.putImageData(d,0,0);
   pc.fillStyle='#fff';pc.fillRect(0,0,W,H);undoStack=[];
 }
-function fromImg(img){loadSource(img,img.naturalWidth,img.naturalHeight);say('Listo.');closePanel()}
-$('load').onclick=function(){
-  var u=$('url').value.trim();if(!u){say('Escribe o pega una URL.',true);return}
-  say('Cargando…');var img=new Image();img.crossOrigin='anonymous';
-  img.onload=function(){fromImg(img)};
-  img.onerror=function(){say('No se pudo cargar esa URL (la web puede no permitirlo). Prueba con "Subir imagen".',true)};
-  img.src=u;
-};
-$('upload').onclick=function(){$('file').click()};
-$('gallery').onclick=function(){$('file').click()};
+
+// ---- selector: galería / dibujos por defecto ----
+function openPick(){say('');$('menu').style.display='flex';$('defs').classList.remove('show');$('pick').classList.add('open')}
+function closePick(){$('pick').classList.remove('open')}
+$('open').onclick=openPick;
+$('close').onclick=closePick;
+$('pick').addEventListener('touchmove',function(e){e.stopPropagation()});
+
+// Galería
+$('o-gal').onclick=function(){$('file').click()};
 $('file').addEventListener('change',function(e){
   var f=e.target.files&&e.target.files[0];if(!f)return;say('Cargando imagen…');
   var r=new FileReader();
-  r.onerror=function(){say('No se pudo leer el archivo.',true)};
+  r.onerror=function(){say('No se pudo leer el archivo.')};
   r.onload=function(){var img=new Image();
-    img.onload=function(){fromImg(img)};
-    img.onerror=function(){say('Archivo no compatible. Prueba con PNG o JPG.',true)};
+    img.onload=function(){loadSource(img,img.naturalWidth,img.naturalHeight);say('');closePick()};
+    img.onerror=function(){say('Archivo no compatible. Prueba con PNG o JPG.')};
     img.src=r.result};
   r.readAsDataURL(f);e.target.value='';
 });
 
-// ---- dibujos incluidos ----
+// Dibujo de respaldo: solo se usa si no se encuentra la carpeta sources/
 function O(x,cx,cy,r){x.beginPath();x.arc(cx,cy,r,0,7);x.stroke()}
-function E(x,cx,cy,rx,ry,rot){x.beginPath();x.ellipse(cx,cy,rx,ry,rot||0,0,7);x.stroke()}
 function L(x,pts,close){x.beginPath();x.moveTo(pts[0],pts[1]);for(var i=2;i<pts.length;i+=2)x.lineTo(pts[i],pts[i+1]);if(close)x.closePath();x.stroke()}
-var DRAW=[
- function(x){O(x,660,110,60);for(var i=0;i<12;i++){var a=i*Math.PI/6;L(x,[660+Math.cos(a)*78,110+Math.sin(a)*78,660+Math.cos(a)*108,110+Math.sin(a)*108])}
+var DEFAULTS=[
+ {name:'Casa',draw:function(x){
+  O(x,660,110,60);for(var i=0;i<12;i++){var a=i*Math.PI/6;L(x,[660+Math.cos(a)*78,110+Math.sin(a)*78,660+Math.cos(a)*108,110+Math.sin(a)*108])}
   x.strokeRect(220,300,280,220);L(x,[195,300,360,170,525,300],true);x.strokeRect(325,400,70,120);x.strokeRect(250,340,60,60);x.strokeRect(420,340,60,60);
-  x.strokeRect(630,400,24,120);O(x,642,370,50);O(x,600,400,38);O(x,685,405,38);L(x,[0,520,800,520]);O(x,90,100,28);O(x,125,92,34);O(x,160,102,26);L(x,[75,126,175,126])},
- function(x){E(x,400,300,190,120);L(x,[214,300,70,180,70,420],true);L(x,[330,187,400,90,470,187]);O(x,520,260,24);
-  x.fillStyle='#000';x.beginPath();x.arc(525,260,9,0,7);x.fill();x.beginPath();x.arc(500,320,40,0.2,1.2);x.stroke();
-  O(x,660,200,24);O(x,700,130,15);O(x,630,110,10);E(x,400,380,60,25,0.3)},
- function(x){for(var i=0;i<6;i++){var a=i*Math.PI/3;O(x,400+Math.cos(a)*110,230+Math.sin(a)*110,55)}O(x,400,230,55);
-  x.strokeRect(385,395,30,165);E(x,330,480,60,24,-0.5);E(x,470,450,60,24,0.5);L(x,[0,560,800,560]);O(x,90,80,40);O(x,700,90,40)}
+  x.strokeRect(630,400,24,120);O(x,642,370,50);O(x,600,400,38);O(x,685,405,38);L(x,[0,520,800,520]);O(x,90,100,28);O(x,125,92,34);O(x,160,102,26);L(x,[75,126,175,126])}}
 ];
-function showDrawing(i){
+function render(def){
   var c=document.createElement('canvas');c.width=800;c.height=600;var x=c.getContext('2d');
   x.fillStyle='#fff';x.fillRect(0,0,800,600);x.strokeStyle='#000';x.lineWidth=8;x.lineJoin=x.lineCap='round';
-  DRAW[i](x);loadSource(c,800,600);closePanel();
+  def.draw(x);return c;
 }
-[0,1,2].forEach(function(i){$('d'+i).onclick=function(){showDrawing(i)}});
+// ---- dibujos por defecto: se leen de la carpeta sources/ (junto a esta página) ----
+// Lista de ficheros: sources/index.json (['casa.png','pez.png'] o {"files":[{"file":"casa.png","name":"Casa"}]}).
+// Si no existe, se intenta leer el listado de la carpeta (solo funciona si el servidor lo permite).
+var SRC_DIR='sources/',EXT=/\.(png|jpe?g|gif|webp|bmp)$/i,noSources=false;
+function nameOf(f){return f.replace(EXT,'').replace(/[_-]+/g,' ')}
+function listSources(cb){
+  fetch(SRC_DIR+'index.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.json()})
+  .then(function(j){cb((j.files||j).map(function(it){return typeof it==='string'?{file:it,name:nameOf(it)}:{file:it.file,name:it.name||nameOf(it.file)}}))})
+  .catch(function(){
+    fetch(SRC_DIR).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
+      var out=[],seen={},re=/href="([^"?#]+)"/gi,m;
+      while((m=re.exec(t))){var f=decodeURIComponent(m[1]).split('/').pop();if(EXT.test(f)&&!seen[f]){seen[f]=1;out.push({file:f,name:nameOf(f)})}}
+      cb(out)}).catch(function(){cb([])});
+  });
+}
+function openSource(it,quiet){
+  var img=new Image();
+  img.onload=function(){loadSource(img,img.naturalWidth,img.naturalHeight);if(!quiet)closePick()};
+  img.onerror=function(){say('No se pudo abrir '+it.file)};
+  img.src=SRC_DIR+encodeURIComponent(it.file);
+}
+function addCard(el,name,fn){
+  var b=document.createElement('button');b.className='def';b.appendChild(el);
+  var n=document.createElement('div');n.textContent=name;b.appendChild(n);b.onclick=fn;$('grid').appendChild(b);
+}
+function loadSources(){
+  listSources(function(items){
+    $('grid').innerHTML='';
+    if(items.length){
+      items.forEach(function(it){
+        var im=new Image();im.src=SRC_DIR+encodeURIComponent(it.file);im.alt=it.name;
+        addCard(im,it.name,function(){openSource(it)});
+      });
+      openSource(items[0],true);
+    }else{
+      noSources=true;
+      addCard(render(DEFAULTS[0]),DEFAULTS[0].name,function(){loadSource(render(DEFAULTS[0]),800,600);closePick()});
+    }
+  });
+}
+$('o-def').onclick=function(){say(noSources?'No se encontró la carpeta "sources". Se muestra el dibujo de respaldo.':'');$('menu').style.display='none';$('defs').classList.add('show')};
 
 // ---- pintar (táctil y ratón) ----
 function pos(e){var r=paint.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
@@ -206,20 +246,8 @@ function fill(sx,sy){
   pc.putImageData(d,0,0);
 }
 $('undo').onclick=function(){var s=undoStack.pop();if(s)pc.putImageData(s,0,0)};
-$('clear').onclick=function(){if(!mask)return;snap();pc.fillStyle='#fff';pc.fillRect(0,0,W,H);closePanel()};
 
-// ---- panel para adultos (mantener pulsado el engranaje) ----
-var timer=null;
-function openPanel(){$('parent').classList.add('open')}
-function closePanel(){$('parent').classList.remove('open')}
-function hold(){timer=setTimeout(openPanel,700)}
-function release(){clearTimeout(timer)}
-$('gear').addEventListener('touchstart',hold);$('gear').addEventListener('mousedown',hold);
-['touchend','touchcancel','mouseup','mouseleave'].forEach(function(n){$('gear').addEventListener(n,release)});
-$('close').onclick=closePanel;
-$('parent').addEventListener('touchmove',function(e){e.stopPropagation()});
-
-layout();showDrawing(0);
+layout();loadSource(render(DEFAULTS[0]),800,600);loadSources();
 })();
 </script>
 </body>
